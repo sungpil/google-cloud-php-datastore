@@ -345,7 +345,8 @@ class EntityMapper
                 if (!empty($value) && $this->isAssoc($value)) {
                     $propertyValue = $this->convertArrayToEntityValue($value);
                 } else {
-                    $propertyValue = $this->convertArrayToArrayValue($value);
+                    $propertyValue = $this->convertArrayToArrayValue($value, $exclude);
+                    $exclude = false;
                 }
 
                 break;
@@ -366,7 +367,7 @@ class EntityMapper
 
             case 'NULL':
                 $propertyValue = [
-                    'nullValue' => null
+                    'nullValue' => 0
                 ];
                 break;
 
@@ -468,9 +469,10 @@ class EntityMapper
      * Convert a non-associative array to a datastore arrayValue type
      *
      * @param array $value The input array
+     * @param bool $exclude [optional] If true, value will be excluded from datastore indexes.
      * @return array The arrayValue property
      */
-    private function convertArrayToArrayValue(array $value)
+    private function convertArrayToArrayValue(array $value, bool $exclude = false)
     {
         $values = [];
         foreach ($value as $val) {
@@ -481,7 +483,7 @@ class EntityMapper
                 $val = (object) $val;
             }
 
-            $values[] = $this->valueObject($val);
+            $values[] = $this->valueObject($val, $exclude);
         }
 
         return [
