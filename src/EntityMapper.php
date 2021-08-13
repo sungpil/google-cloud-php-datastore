@@ -347,7 +347,8 @@ class EntityMapper
                 if (!empty($value) && $this->isAssoc($value)) {
                     $propertyValue = $this->convertArrayToEntityValue($value);
                 } else {
-                    $propertyValue = $this->convertArrayToArrayValue($value);
+                    $propertyValue = $this->convertArrayToArrayValue($value, $exclude);
+                    $exclude = false;
                 }
 
                 break;
@@ -368,7 +369,7 @@ class EntityMapper
 
             case 'NULL':
                 $propertyValue = [
-                    'nullValue' => null
+                    'nullValue' => 0
                 ];
                 break;
 
@@ -472,7 +473,7 @@ class EntityMapper
      * @param array $value The input array
      * @return array The arrayValue property
      */
-    private function convertArrayToArrayValue(array $value)
+    private function convertArrayToArrayValue(array $value, bool $exclude = false)
     {
         $values = [];
         foreach ($value as $val) {
@@ -483,7 +484,7 @@ class EntityMapper
                 $val = (object) $val;
             }
 
-            $values[] = $this->valueObject($val);
+            $values[] = $this->valueObject($val, $exclude);
         }
 
         return [
